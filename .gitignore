@@ -5,3 +5,6 @@
 private.py
 Spotify-Song-Grouper.Rproj
 .DS_Store
+.cache-ii9gd6cvmhmx3h0uwtjftpi95
+.ipynb_checkpoints
+__pycache__
