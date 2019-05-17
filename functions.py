@@ -67,7 +67,7 @@ def getalbum(albumid, album, artist, spotifyobject=SPOTIFY):
         row = pandas.DataFrame([[i['id'], i['name'], album, artist]],
                                columns=['trackid', 'track', 'album', 'artist'])
         data = data.append(row)
-    data.to_csv('trackids/' + album + '.csv', index=False)
+    data.to_csv('trackids/' + albumid + '.csv', index=False)
 
 
 def searchplaylist(playlist, spotifyobject=SPOTIFY):
@@ -100,7 +100,7 @@ def getplaylist(userid, playlistid, playlist, spotifyobject=SPOTIFY):
                                columns=['playlist', 'artist', 'track',
                                         'trackid'])
         data = data.append(row)
-    data.to_csv('trackids/' + playlist + '.csv', index=False)
+    data.to_csv('trackids/' + playlistid + '.csv', index=False)
 
 
 def getanalysis(album, spotifyobject=SPOTIFY):
