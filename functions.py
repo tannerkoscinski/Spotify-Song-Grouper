@@ -112,9 +112,12 @@ def getanalysis(album, spotifyobject=SPOTIFY):
     """
     trackids = pandas.read_csv('trackids/' + album + '.csv')['trackid']
     for i in trackids:
-        result = spotifyobject.audio_analysis(i)['segments']
-        data = pandas.DataFrame()
-        for j in result:
-            row = pandas.DataFrame([j['timbre']])
-            data = data.append(row)
-        data.to_csv('analysis/' + i + '.csv', index=False)
+        try:
+            pandas.read_csv('analysis/' + i + '.csv', nrows=1)
+        except IOError:
+            result = spotifyobject.audio_analysis(i)['segments']
+            data = pandas.DataFrame()
+            for j in result:
+                row = pandas.DataFrame([j['timbre']])
+                data = data.append(row)
+            data.to_csv('analysis/' + i + '.csv', index=False)
