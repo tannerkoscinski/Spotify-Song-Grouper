@@ -1,5 +1,7 @@
 """This file contains the functions."""
 import pandas
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
 import spotipy
 import spotipy.util as util
 from private import USERNAME, CLIENT_ID, CLIENT_SECRET
@@ -85,7 +87,7 @@ def searchplaylist(playlist, spotifyobject=SPOTIFY):
 
 def getplaylist(userid, playlistid, playlist, spotifyobject=SPOTIFY):
     """
-    The function gets the track ids of a playlist.
+    This function gets the track ids of a playlist.
     :param userid: the user id of the owner of the playlist
     :param playlistid: the playlist id
     :param playlist: the playlist name
@@ -99,6 +101,25 @@ def getplaylist(userid, playlistid, playlist, spotifyobject=SPOTIFY):
                                  i['track']['name'], i['track']['id']]],
                                columns=['playlist', 'artist', 'track',
                                         'trackid'])
+        data = data.append(row)
+    data.to_csv('trackids/' + playlistid + '.csv', index=False)
+
+
+def getplaylist2(userid, playlistid, spotifyobject=SPOTIFY):
+    """
+    This function gets the track ids of a playlist.
+    :param userid: the user id of the owner of the playlist
+    :param playlistid: the playlist id
+    :param spotifyobject: the spotify object
+    :return: a csv with the track ids of the playlist is saved
+    """
+    result = spotifyobject.user_playlist_tracks(userid, playlistid)['items']
+    data = pandas.DataFrame()
+    for i in result:
+        row = pandas.DataFrame([[i['track']['artists'][0]['name'],
+                                 i['track']['album']['name'],
+                                 i['track']['name'], i['track']['id']]],
+                               columns=['artist', 'album', 'track', 'trackid'])
         data = data.append(row)
     data.to_csv('trackids/' + playlistid + '.csv', index=False)
 
@@ -121,3 +142,62 @@ def getanalysis(album, spotifyobject=SPOTIFY):
                 row = pandas.DataFrame([j['timbre']])
                 data = data.append(row)
             data.to_csv('analysis/' + i + '.csv', index=False)
+
+
+def cluster(ownerid, playlistid, k, useold=True, usesimple=False):
+    """
+    This function clusters the tracks.
+    :param ownerid: the playlist's owner id
+    :param playlistid: the playlist id
+    :param k: the number of clusters
+    :param useold: the previously downloaded playlist should be used
+    :param usesimple: a faster, simpler, less accurate method should be used
+    :return: the playlist with cluster labels
+    """
+    # Get audio analyses
+    if not useold:
+        getplaylist2(ownerid, playlistid)
+        getanalysis(playlistid)
+    try:
+        pandas.read_csv('trackids/' + playlistid + '.csv')
+    except IOError:
+        getplaylist2(ownerid, playlistid)
+        getanalysis(playlistid)
+
+    # Load the track ids
+    playlist = pandas.read_csv('trackids/' + playlistid + '.csv')
+
+    # Load the audio analyses
+    data = pandas.DataFrame()
+    for i, j in enumerate(playlist['trackid']):
+        trackdata = pandas.read_csv('analysis/' + j + '.csv')
+        if usesimple:
+            trackdata = trackdata.mean()
+        trackdata['track'] = playlist['track'][i]
+        trackdata['album'] = playlist['album'][i]
+        trackdata['artist'] = playlist['artist'][i]
+        data = data.append(trackdata, ignore_index=True)
+
+    # Standardize the data
+    audio = data.iloc[:, 0:12].values
+    audio = StandardScaler().fit_transform(audio)
+
+    if not usesimple:
+        # Cluster all the sounds from both playlists into 70 clusters
+        kmeans = KMeans(n_clusters=70, random_state=0)
+        labels = kmeans.fit_predict(audio)
+
+        # Calculate the proportion of each song's sounds that are in each group
+        soundtable = pandas.crosstab(data['track'], labels,
+                                     normalize='index').reset_index()
+        soundtable = playlist.merge(soundtable)
+
+        # Standardize the data
+        audio = soundtable.iloc[:, 4:].values
+        audio = StandardScaler().fit_transform(audio)
+
+    # Cluster the tracks into k groups
+    kmeans2 = KMeans(n_clusters=k, random_state=0)
+    playlist['group'] = kmeans2.fit_predict(audio)
+
+    return playlist

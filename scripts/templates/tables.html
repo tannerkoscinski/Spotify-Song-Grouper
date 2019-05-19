@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Song Grouper</title>
+</head>
+<body>
+    <div>
+        <h1>Song Groups</h1>
+        {% for table in tables %}
+            <h2>{{'Song Group ' + loop.index|string}}</h2>
+            {{ table|safe }}
+        {% endfor %}
+    </div>
+</body>
+</html>
