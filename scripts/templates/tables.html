@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Spotify Song Grouper</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        .dataframe tbody th {display: none;}
+        .dataframe thead th:first-child {display: none;}
+    </style>
 </head>
-<body>
-    <div>
-        <h1>Song Groups</h1>
+<body style="background-color: #999999;">
+    <div style="max-width: 1000px; margin: auto;">
+        <h1 style="text-align: center;">Song Groups</h1>
         {% for table in tables %}
-            <h2>{{'Song Group ' + loop.index|string}}</h2>
+            <h2 style="text-align: center;">{{'Song Group ' + loop.index|string}}</h2>
             {{ table|safe }}
         {% endfor %}
     </div>

@@ -144,25 +144,18 @@ def getanalysis(album, spotifyobject=SPOTIFY):
             data.to_csv('analysis/' + i + '.csv', index=False)
 
 
-def cluster(ownerid, playlistid, k, useold=True, usesimple=False):
+def cluster(ownerid, playlistid, k, usesimple=False):
     """
     This function clusters the tracks.
     :param ownerid: the playlist's owner id
     :param playlistid: the playlist id
     :param k: the number of clusters
-    :param useold: the previously downloaded playlist should be used
     :param usesimple: a faster, simpler, less accurate method should be used
     :return: the playlist with cluster labels
     """
     # Get audio analyses
-    if not useold:
-        getplaylist2(ownerid, playlistid)
-        getanalysis(playlistid)
-    try:
-        pandas.read_csv('trackids/' + playlistid + '.csv')
-    except IOError:
-        getplaylist2(ownerid, playlistid)
-        getanalysis(playlistid)
+    getplaylist2(ownerid, playlistid)
+    getanalysis(playlistid)
 
     # Load the track ids
     playlist = pandas.read_csv('trackids/' + playlistid + '.csv')

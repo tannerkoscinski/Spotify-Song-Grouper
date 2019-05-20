@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 from flask import *
-# from functions import cluster
 import pandas
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 
 
-def cluster(ownerid, playlistid, k, useold=True, usesimple=False):
+def cluster(playlistid, k, usesimple=False):
     """
     This function clusters the tracks.
-    :param ownerid: the playlist's owner id
     :param playlistid: the playlist id
     :param k: the number of clusters
-    :param useold: the previously downloaded playlist should be used
     :param usesimple: a faster, simpler, less accurate method should be used
     :return: the playlist with cluster labels
     """
@@ -60,20 +57,24 @@ def flask_app():
     app = Flask(__name__)
 
     @app.route('/', methods=['GET'])
+    def index():
+        return render_template('indexd.html')
+
+    @app.route('/', methods=['POST'])
     def show_tables():
-        userid = 'tannerkoscinski'
-        playlistid = '7oG3OYCE79smeQ2IgqbT8a'
-        k = 2
-        data = cluster(userid, playlistid, k, usesimple=True)
+        playlistid = request.form['playlistid']
+        k = int(request.form['k'])
+        simple = True
+        if request.form['method'] == 'complex':
+            simple = False
+        data = cluster(playlistid, k, usesimple=simple)
+        data = data.rename(str.upper, axis=1)
         tables = []
         for i in range(k):
-            tables.append(data.loc[data['group'] == i,
-                                   ['artist', 'album', 'track']].to_html())
+            tables.append(data.loc[data['GROUP'] == i,
+                                   ['ARTIST', 'ALBUM',
+                                    'TRACK']].to_html(classes='w3-table-all'))
         return render_template('tables.html', tables=tables)
-
-    @app.route('/mpg', methods=['POST'])
-    def mpg():
-        return 'test'
 
     return app
 

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Song Grouper</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body style="background-color: #999999;">
+    <h1 style="text-align: center;">Spotify Song Grouper</h1>
+    <form style="max-width: 1000px; margin: auto;" class="w3-container" method="post">
+        <label><b>Playlist ID</b></label>
+        <input class="w3-input w3-border" type="text" name="playlistid" value="7oG3OYCE79smeQ2IgqbT8a" />
+        <br>
+        <label><b>Number of Groups</b></label>
+        <input class="w3-input w3-border" type="text" name="k" value="2" />
+        <p><b>Select Method:</b>
+            <input class="w3-radio" type="radio" name="method" value="simple" checked />
+            <label><b>Fast, Simple, Less Accurate</b></label>
+            <input class="w3-radio" type="radio" name="method" value="complex" />
+            <label><b>Slower, More Complex, More Accurate</b></label>
+        </p>
+        <input class="w3-button w3-black" type="submit" value="Run" />
+    </form>
+</body>
+</html>
