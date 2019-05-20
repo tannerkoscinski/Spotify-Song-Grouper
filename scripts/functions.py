@@ -4,17 +4,17 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import spotipy
 import spotipy.util as util
-from private import USERNAME, CLIENT_ID, CLIENT_SECRET
+from private import CLIENT_ID, CLIENT_SECRET
 
 
-def initializer(username, client_id, client_secret):
+def initializer(client_id, client_secret):
     """
     This function creates the spotify object.
-    :param username: username of Spotify account to use
     :param client_id: Spotify application's client id
     :param client_secret: Spotify application's client secret
     :return: the spotify object needed to access the API
     """
+    username = 'username'
     scope = 'user-top-read'
     redirect_uri = 'http://google.com/'
     token = util.prompt_for_user_token(username, scope, client_id,
@@ -23,7 +23,7 @@ def initializer(username, client_id, client_secret):
     return spotify_object
 
 
-SPOTIFY = initializer(USERNAME, CLIENT_ID, CLIENT_SECRET)
+SPOTIFY = initializer(CLIENT_ID, CLIENT_SECRET)
 
 
 def searchartist(artist, spotifyobject=SPOTIFY):
