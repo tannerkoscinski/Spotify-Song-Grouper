@@ -18,6 +18,8 @@ I explore the effectiveness of this grouping method on several different larger 
 
 ---
 
+`presentation.pdf` is a brief presentation of the Spotify Song Grouper.
+
 `scripts` is a folder that contains all of the Spotify Song Grouper code and related files.
 
 `docker` is a folder that contains everything that is required to build a Docker container.
