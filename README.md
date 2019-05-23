@@ -22,30 +22,22 @@ I explore the effectiveness of this grouping method on several different larger 
 
 `scripts` is a folder that contains all of the Spotify Song Grouper code and related files.
 
-`docker` is a folder that contains everything that is required to build a Docker container.
+`docker` is a folder that contains everything that is required to build the Docker container.
 
 ---
 
 ## How to Use the Spotify Song Grouper
 
-### Option 1: Docker
+* [Create a Spotify app](https://developer.spotify.com/dashboard/applications)
 
-To use the Spotify Song Grouper to group songs in a playlist that has already been downloaded, simply navigate to the `docker` folder in Terminal, run the command `docker-compose up`, and click the link to open the Spotify Song Grouper in your browser. (Note: You must have Docker installed and running.)
+* Click Edit Settings and add http://0.0.0.0:5000/authorize under Redirect URIs
 
-A sample playlist has already been downloaded, and its ID is set as the default, so you can get a feel for how it works. You can adjust the number of song groups you would like, and you can select a quick, less accurate grouping method or a slower, more accurate grouping method. The less accurate method just uses the column averages for the timbre vectors for each track. The more accurate method uses the two-part k-means clustering method.
+* Install Docker and make sure it is running
 
-To group songs in a playlist that has not already been downloaded, you will have to [create a Spotify app](https://developer.spotify.com/dashboard/applications). Then click Edit Settings and add http://google.com/ under Redirect URIs. Copy your Client ID and Client Secret into `private-template.py` in the `scripts` folder and change the file name to `private.py`. Then open `getanalysis.ipynb` in JupyterLab and follow the instructions there.
+* Download this repository
 
-### Option 2: Terminal
+* Copy your Spotify app's Client ID and Client Secret into `private-template.py` in the `scripts` folder and change the file name to `private.py`
 
-Prerequisites:
-
-* Install Python 3.7 and everything in the `requirements.txt` file located in the `docker` folder.
-
-* [Create a Spotify app](https://developer.spotify.com/dashboard/applications). Then click Edit Settings and add http://google.com/ under Redirect URIs.
-
-* Copy your Client ID and Client Secret into `private-template.py` in the `scripts` folder and change the file name to `private.py`.
-
-In Terminal, navigate to the `scripts` folder, and run `python3 grouper.py`. You will have to authorize a Spotify account before you can click the link to open the Spotify Song Grouper in your browser.
+* Navigate to the `docker` folder in Terminal, run the command `docker-compose up`, and click the link to open the Spotify Song Grouper in your browser
 
 A sample playlist has already been downloaded, and its owner ID and playlist ID are set as the defaults, so you can get a feel for how it works. You can adjust the number of song groups you would like, and you can select a quick, less accurate grouping method or a slower, more accurate grouping method. The less accurate method just uses the column averages for the timbre vectors for each track. The more accurate method uses the two-part k-means clustering method. You can input any owner ID and playlist ID, but it may take a while to download all of the audio analyses depending on the length of the playlist.

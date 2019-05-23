@@ -2,28 +2,29 @@
 import pandas
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
-import spotipy
-import spotipy.util as util
-from private import CLIENT_ID, CLIENT_SECRET
+import Spotipy
+import Spotipy.util as util
+from private import SCOPE, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 
 
-def initializer(client_id, client_secret):
+def initializer(scope=SCOPE, client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+                redirect_uri=REDIRECT_URI):
     """
     This function creates the spotify object.
+    :param scope: Spotify application's scope
     :param client_id: Spotify application's client id
     :param client_secret: Spotify application's client secret
+    :param redirect_uri: Spotify application's redirect URI
     :return: the spotify object needed to access the API
     """
     username = 'username'
-    scope = 'user-top-read'
-    redirect_uri = 'http://google.com/'
     token = util.prompt_for_user_token(username, scope, client_id,
                                        client_secret, redirect_uri)
-    spotify_object = spotipy.Spotify(auth=token)
+    spotify_object = Spotipy.Spotify(auth=token)
     return spotify_object
 
 
-SPOTIFY = initializer(CLIENT_ID, CLIENT_SECRET)
+SPOTIFY = initializer()
 
 
 def searchartist(artist, spotifyobject=SPOTIFY):
@@ -105,7 +106,7 @@ def getplaylist(userid, playlistid, playlist, spotifyobject=SPOTIFY):
     data.to_csv('trackids/' + playlistid + '.csv', index=False)
 
 
-def getplaylist2(userid, playlistid, spotifyobject=SPOTIFY):
+def getplaylist2(userid, playlistid, spotifyobject):
     """
     This function gets the track ids of a playlist.
     :param userid: the user id of the owner of the playlist
@@ -121,7 +122,7 @@ def getplaylist2(userid, playlistid, spotifyobject=SPOTIFY):
                                  i['track']['name'], i['track']['id']]],
                                columns=['artist', 'album', 'track', 'trackid'])
         data = data.append(row)
-    data.to_csv('trackids/' + playlistid + '.csv', index=False)
+    data.to_csv('scripts/trackids/' + playlistid + '.csv', index=False)
 
 
 def getanalysis(album, spotifyobject=SPOTIFY):
@@ -144,26 +145,47 @@ def getanalysis(album, spotifyobject=SPOTIFY):
             data.to_csv('analysis/' + i + '.csv', index=False)
 
 
-def cluster(ownerid, playlistid, k, usesimple=False):
+def getanalysis2(album, spotifyobject):
+    """
+    This function gets the timbre of the tracks of the album or playlist.
+    :param album: the album id or playlist id
+    :param spotifyobject: the spotify object
+    :return: a csv with the timbre is saved for each track
+    """
+    trackids = pandas.read_csv('scripts/trackids/' + album + '.csv')['trackid']
+    for i in trackids:
+        try:
+            pandas.read_csv('scripts/analysis/' + i + '.csv', nrows=1)
+        except IOError:
+            result = spotifyobject.audio_analysis(i)['segments']
+            data = pandas.DataFrame()
+            for j in result:
+                row = pandas.DataFrame([j['timbre']])
+                data = data.append(row)
+            data.to_csv('scripts/analysis/' + i + '.csv', index=False)
+
+
+def cluster(ownerid, playlistid, k, spotifyobject, usesimple=False):
     """
     This function clusters the tracks.
     :param ownerid: the playlist's owner id
     :param playlistid: the playlist id
     :param k: the number of clusters
+    :param spotifyobject: the Spotify object
     :param usesimple: a faster, simpler, less accurate method should be used
     :return: the playlist with cluster labels
     """
     # Get audio analyses
-    getplaylist2(ownerid, playlistid)
-    getanalysis(playlistid)
+    getplaylist2(ownerid, playlistid, spotifyobject)
+    getanalysis2(playlistid, spotifyobject)
 
     # Load the track ids
-    playlist = pandas.read_csv('trackids/' + playlistid + '.csv')
+    playlist = pandas.read_csv('scripts/trackids/' + playlistid + '.csv')
 
     # Load the audio analyses
     data = pandas.DataFrame()
     for i, j in enumerate(playlist['trackid']):
-        trackdata = pandas.read_csv('analysis/' + j + '.csv')
+        trackdata = pandas.read_csv('scripts/analysis/' + j + '.csv')
         if usesimple:
             trackdata = trackdata.mean()
         trackdata['track'] = playlist['track'][i]
