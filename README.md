@@ -18,6 +18,8 @@ I explore the effectiveness of this grouping method on several different larger 
 
 ---
 
+`grouper.html` is an HTML document detailing the full process of the Spotify Song Grouper including background information, a description of the methodology, data collection, exploration of the effectiveness of the grouping method on several different larger groups of songs, and final thoughts on the grouping method.
+
 `presentation.pdf` is a brief presentation of the Spotify Song Grouper.
 
 `scripts` is a folder that contains all of the Spotify Song Grouper code and related files.
