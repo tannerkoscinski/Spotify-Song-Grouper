@@ -1,6 +1,6 @@
 pandas==0.24.2
 spotipy==2.4.4
-jupyterlab==0.35.6
+jupyterlab==1.2.21
 scikit-learn==0.21.1
 matplotlib==3.0.3
 Flask==1.0.3
